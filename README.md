@@ -2,6 +2,14 @@
 
 A professional-grade TikZ integration for Obsidian, enabling seamless creation of publication-quality diagrams, mathematical visualizations, and complex graphical representations directly in your knowledge base.
 
+<!-- limit size of this image -->
+<!-- another image on the right side for docs/images/tikz-advanced-demo2.png -->
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <img src="docs/images/tikz-advanced-demo.png" alt="TikZ Advanced Plugin Demo" width="48%">
+  <img src="docs/images/tik-advanced-client-config-demo.png" alt="TikZ Advanced Plugin Demo 2" width="48%">
+  <img src="docs/images/tikz-error-handling.png" alt="TikZ Advanced Plugin Demo 3" width="48%">
+</div>
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/perryzjc/obsidian-tikz-advanced)](https://github.com/perryzjc/obsidian-tikz-advanced/releases/latest)
 [![GitHub license](https://img.shields.io/github/license/perryzjc/obsidian-tikz-advanced)](https://github.com/perryzjc/obsidian-tikz-advanced/blob/main/LICENSE)
