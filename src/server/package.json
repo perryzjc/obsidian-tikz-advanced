@@ -1,0 +1,27 @@
+{
+  "name": "tikz-server",
+  "version": "1.0.0",
+  "description": "TikZ rendering server for Obsidian TikZ Advanced plugin",
+  "main": "server.js",
+  "scripts": {
+    "start": "ts-node server.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "author": "Perry Zhong",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "tslib": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}

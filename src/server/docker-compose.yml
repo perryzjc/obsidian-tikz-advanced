@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  tikz-server:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - LOG_LEVEL=info
+    volumes:
+      - ./tmp:/app/tmp
+    restart: unless-stopped

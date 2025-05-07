@@ -1,0 +1,12 @@
+{
+  "id": "tikz-advanced",
+  "name": "TikZ Advanced",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Advanced TikZ plugin for Obsidian with client-server architecture, SVG/PDF export, zoom functionality, and intelligent library detection",
+  "author": "Perry Zhong",
+  "authorUrl": "https://github.com/perryzjc",
+  "fundingUrl": "https://github.com/sponsors/perryzjc",
+  "isDesktopOnly": true,
+  "repository": "https://github.com/perryzjc/obsidian-tikz-advanced"
+}

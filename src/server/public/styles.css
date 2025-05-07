@@ -1,0 +1,371 @@
+:root {
+    --primary-color: #4a6fa5;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --body-bg: #f5f5f5;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --text-color: #212529;
+    --text-muted: #6c757d;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--body-bg);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h1, h2, h3 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+    font-family: monospace;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #3a5a8a;
+}
+
+.status-container {
+    display: flex;
+    align-items: center;
+}
+
+.status-label {
+    margin-right: 5px;
+}
+
+.status-indicator {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-online {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.status-offline {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.status-checking {
+    background-color: var(--warning-color);
+    color: var(--dark-color);
+}
+
+.loading {
+    display: none;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.result-container {
+    margin-top: 10px;
+    overflow: auto;
+    max-height: 500px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 10px;
+    background-color: var(--light-color);
+}
+
+.result-container svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.error-message {
+    margin-top: 10px;
+    padding: 0;
+    border-radius: 4px;
+    display: none;
+    overflow: hidden;
+}
+
+/* For simple error messages without structured content */
+.error-message.simple-error {
+    padding: 10px;
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+}
+
+/* Enhanced error container */
+.tikz-error-container {
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Error header */
+.tikz-error-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    font-weight: 600;
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Error header for different severity levels */
+.tikz-error-header.warning {
+    background-color: var(--warning-color);
+    color: #333;
+}
+
+.tikz-error-header.info {
+    background-color: var(--info-color);
+}
+
+/* Error icon */
+.tikz-error-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+/* Error title */
+.tikz-error-title {
+    flex: 1;
+}
+
+/* Error message section */
+.tikz-error-message {
+    padding: 12px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Specific error message styling */
+.tikz-error-message.specific-error {
+    font-weight: 600;
+    color: #d32f2f;
+    background-color: rgba(211, 47, 47, 0.05);
+    border-left: 3px solid #d32f2f;
+    padding-left: 15px;
+}
+
+/* Error details section */
+.tikz-error-details {
+    padding: 12px;
+    background-color: white;
+    border-top: 1px solid #ddd;
+}
+
+/* Error line number */
+.tikz-error-line {
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Error suggestion */
+.tikz-error-suggestion {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-left: 3px solid var(--info-color);
+    border-radius: 0 4px 4px 0;
+}
+
+/* Error code */
+.tikz-error-code {
+    margin-bottom: 12px;
+}
+
+.tikz-error-code code {
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Error context */
+.tikz-error-context {
+    margin-top: 12px;
+}
+
+.tikz-error-context pre {
+    background-color: #f5f5f5;
+    padding: 8px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Progressive rendering note */
+.tikz-error-progressive-note {
+    margin: 12px 0;
+    padding: 8px 12px;
+    background-color: #f0f8ff;
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: #555;
+}
+
+/* Fix button */
+.tikz-error-fix {
+    margin-top: 12px;
+    text-align: right;
+}
+
+.tikz-fix-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tikz-fix-button:hover {
+    background-color: #3a5a8a;
+}
+
+pre {
+    background-color: var(--light-color);
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 15px;
+}
+
+code {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 14px;
+}
+
+footer {
+    margin-top: 30px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .status-container {
+        margin-top: 10px;
+    }
+}

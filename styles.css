@@ -1,0 +1,487 @@
+/* TikZ Advanced Plugin Styles */
+
+.tikz-container {
+  position: relative;
+  margin: 10px 0;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tikz-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.tikz-toolbar button {
+  margin-right: 4px;
+  padding: 2px 6px;
+  background-color: var(--interactive-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tikz-toolbar button:hover {
+  background-color: var(--interactive-hover);
+}
+
+.tikz-toolbar .spacer {
+  flex: 1;
+}
+
+.tikz-toolbar .format-selector {
+  margin-right: 8px;
+}
+
+.tikz-content {
+  padding: 10px;
+  background-color: var(--background-primary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.tikz-content img, .tikz-content svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.tikz-content.zoom-enabled {
+  cursor: zoom-in;
+}
+
+.tikz-content.zoomed {
+  cursor: zoom-out;
+}
+
+/* Basic error container */
+.tikz-error {
+  padding: 10px;
+  background-color: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-normal);
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* Error wrapper for HTML content from server */
+.tikz-error-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Make sure these styles are applied in Obsidian */
+.markdown-source-view .tikz-error-wrapper,
+.markdown-preview-view .tikz-error-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Enhanced error container */
+.tikz-error-container {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  font-size: 14px;
+  width: 100%;
+  display: block !important;
+}
+
+/* Make sure these styles are applied in Obsidian */
+.markdown-source-view .tikz-error-container,
+.markdown-preview-view .tikz-error-container {
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+  border: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  font-size: 14px;
+  width: 100%;
+  display: block !important;
+}
+
+/* Error header */
+.tikz-error-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  font-weight: 600;
+  background-color: var(--background-modifier-error);
+  color: white;
+  cursor: pointer;
+}
+
+/* Error toggle button */
+.tikz-error-toggle {
+  margin-left: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.tikz-error-toggle:hover {
+  opacity: 1;
+}
+
+/* Error icon */
+.tikz-error-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  flex-shrink: 0;
+}
+
+/* Error title */
+.tikz-error-title {
+  flex: 1;
+  font-size: 14px;
+}
+
+/* Error message section */
+.tikz-error-message {
+  padding: 12px;
+  background-color: var(--background-primary);
+  border-bottom: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Specific error message styling */
+.tikz-error-message.specific-error {
+  font-weight: 600;
+  color: white;
+  background-color: var(--background-modifier-error-hover);
+  border-left: 3px solid var(--text-error);
+  padding-left: 15px;
+}
+
+/* Error note section */
+.tikz-error-note {
+  padding: 8px 12px;
+  background-color: var(--background-secondary-alt);
+  color: white;
+  font-size: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+  font-style: italic;
+}
+
+/* Progressive rendering note */
+.tikz-error-progressive-note {
+  padding: 8px 12px;
+  background-color: var(--background-secondary-alt);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: 0 4px 4px 0;
+  color: white;
+  font-size: 13px;
+  font-style: italic;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Syntax fix note */
+.tikz-error-syntax-fix-note {
+  padding: 8px 12px;
+  background-color: var(--background-secondary-alt);
+  border-left: 3px solid #f0ad4e; /* Amber/warning color */
+  border-radius: 0 4px 4px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+/* Error details section */
+.tikz-error-details {
+  padding: 12px;
+  background-color: var(--background-secondary-alt);
+  border-top: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+}
+
+/* Make sure error details are visible in Obsidian */
+.markdown-source-view .tikz-error-details,
+.markdown-preview-view .tikz-error-details {
+  padding: 12px;
+  background-color: var(--background-secondary-alt);
+  border-top: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  display: block;
+}
+
+/* Error line number */
+.tikz-error-line {
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background-color: var(--background-secondary);
+  border-radius: 4px;
+  display: inline-block;
+  color: var(--text-normal);
+}
+
+/* Error suggestion */
+.tikz-error-suggestion {
+  margin-bottom: 16px;
+  padding: 10px;
+  background-color: var(--background-primary);
+  border-left: 3px solid var(--interactive-accent);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
+.tikz-error-suggestion strong {
+  color: var(--text-normal);
+  margin-right: 4px;
+}
+
+/* Error code */
+.tikz-error-code {
+  margin-bottom: 16px;
+  padding: 10px;
+  background-color: var(--background-primary);
+  border-radius: 4px;
+}
+
+.tikz-error-code strong {
+  color: var(--text-normal);
+  margin-right: 4px;
+}
+
+.tikz-error-code code {
+  background-color: var(--background-secondary);
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  color: var(--text-normal);
+}
+
+/* Error context */
+.tikz-error-context {
+  margin-top: 16px;
+  padding: 10px;
+  background-color: var(--background-primary);
+  border-radius: 4px;
+}
+
+.tikz-error-context strong {
+  color: var(--text-normal);
+  margin-right: 4px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.tikz-error-context pre {
+  background-color: var(--background-secondary);
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: var(--font-monospace);
+  font-size: 13px;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+  color: var(--text-normal);
+  margin: 0;
+}
+
+/* Fix button */
+.tikz-error-fix {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.tikz-fix-button {
+  background-color: var(--interactive-accent);
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.tikz-fix-button:hover {
+  background-color: var(--interactive-accent-hover);
+}
+
+.tikz-cache-indicator {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+.tikz-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.tikz-loading-spinner {
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top: 3px solid var(--interactive-accent);
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Server control styles */
+.server-control {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--background-secondary-alt);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.server-control h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+.server-status {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.server-status-running {
+  color: var(--text-success);
+  font-weight: 500;
+}
+
+.server-status-stopped {
+  color: var(--text-error);
+  font-weight: 500;
+}
+
+.server-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.server-start-button, .server-stop-button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.server-start-button {
+  background-color: var(--interactive-success);
+  color: white;
+}
+
+.server-start-button:hover:not(:disabled) {
+  background-color: var(--interactive-success-hover);
+}
+
+.server-stop-button {
+  background-color: var(--background-modifier-error);
+  color: white;
+}
+
+.server-stop-button:hover:not(:disabled) {
+  background-color: var(--background-modifier-error-hover);
+}
+
+.server-start-button:disabled, .server-stop-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Connection status styles */
+.connection-status {
+  margin: 15px 0;
+  padding: 10px;
+  background-color: var(--background-secondary-alt);
+  border-radius: 6px;
+  border: 1px solid var(--background-modifier-border);
+}
+
+.connection-status h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+.status-text {
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.status-success {
+  color: var(--text-success);
+  font-weight: 500;
+}
+
+.status-error {
+  color: var(--text-error);
+  font-weight: 500;
+}
+
+.server-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--background-primary);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.troubleshooting-tips {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--background-primary);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.troubleshooting-tips h5 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: var(--text-normal);
+}
+
+.troubleshooting-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* Disabled text field */
+.setting-item input.disabled {
+  opacity: 0.7;
+  background-color: var(--background-secondary);
+}
