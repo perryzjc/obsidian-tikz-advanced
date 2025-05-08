@@ -193,8 +193,7 @@ var TikZRenderer = class {
     }
     const loadingEl = contentEl.createDiv({ cls: "tikz-loading" });
     loadingEl.createDiv({ cls: "tikz-loading-spinner" });
-    const errorEl = tikzContainer.createDiv({ cls: "tikz-error" });
-    errorEl.style.display = "none";
+    const errorEl = tikzContainer.createDiv({ cls: "tikz-error tikz-hidden" });
     let cacheIndicator = null;
     if (this.plugin.settings.showCacheIndicator) {
       cacheIndicator = toolbar.createSpan({ cls: "tikz-cache-indicator" });
@@ -219,7 +218,8 @@ var TikZRenderer = class {
         }
       } catch (error) {
         loadingEl.remove();
-        errorEl.style.display = "block";
+        errorEl.removeClass("tikz-hidden");
+        errorEl.addClass("tikz-visible");
         errorEl.empty();
         if (error.errorInfo || error.errorHTML) {
           this.createStructuredErrorDisplay(errorEl, error);
@@ -236,14 +236,17 @@ var TikZRenderer = class {
     }
     if (renderResult) {
       if (renderResult.format === "svg") {
-        contentEl.innerHTML = renderResult.content;
+        const svgContainer = contentEl.createDiv();
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(renderResult.content, "image/svg+xml");
+        const svgElement = svgDoc.documentElement;
+        svgContainer.appendChild(document.importNode(svgElement, true));
       } else if (renderResult.format === "pdf") {
         const pdfEmbed = contentEl.createEl("embed", {
           attr: {
             type: "application/pdf",
             src: `data:application/pdf;base64,${renderResult.content}`,
-            width: "100%",
-            height: "400px"
+            cls: "tikz-pdf-embed"
           }
         });
       }
@@ -263,14 +266,17 @@ var TikZRenderer = class {
     });
     if (this.plugin.settings.enableZoom) {
       let zoomLevel = 1;
+      contentEl.addClass("tikz-content-zoom-1");
       contentEl.addEventListener("click", () => {
         if (zoomLevel === 1) {
           zoomLevel = 2;
-          contentEl.style.transform = `scale(${zoomLevel})`;
+          contentEl.removeClass("tikz-content-zoom-1");
+          contentEl.addClass("tikz-content-zoom-2");
           contentEl.addClass("zoomed");
         } else {
           zoomLevel = 1;
-          contentEl.style.transform = "";
+          contentEl.removeClass("tikz-content-zoom-2");
+          contentEl.addClass("tikz-content-zoom-1");
           contentEl.removeClass("zoomed");
         }
       });
@@ -280,7 +286,8 @@ var TikZRenderer = class {
     contentEl.empty();
     const loadingEl = contentEl.createDiv({ cls: "tikz-loading" });
     loadingEl.createDiv({ cls: "tikz-loading-spinner" });
-    errorEl.style.display = "none";
+    errorEl.addClass("tikz-hidden");
+    errorEl.removeClass("tikz-visible");
     if (cacheIndicator) {
       cacheIndicator.setText("");
     }
@@ -304,36 +311,33 @@ var TikZRenderer = class {
         }
       } catch (error) {
         loadingEl.remove();
-        errorEl.style.display = "block";
-        console.log("TikZ error object:", error);
-        console.log("Error message:", error.message);
-        console.log("Has errorHTML:", !!error.errorHTML);
-        console.log("Has errorInfo:", !!error.errorInfo);
+        errorEl.removeClass("tikz-hidden");
+        errorEl.addClass("tikz-visible");
+        if (this.plugin.settings.debugMode) {
+          console.log("TikZ error object:", error);
+          console.log("Error message:", error.message);
+          console.log("Has errorHTML:", !!error.errorHTML);
+          console.log("Has errorInfo:", !!error.errorInfo);
+        }
         errorEl.empty();
         if (error.errorInfo || error.errorHTML) {
           this.createStructuredErrorDisplay(errorEl, error);
         } else {
-          const errorContainer = document.createElement("div");
-          errorContainer.className = "tikz-error-container";
-          const errorHeader = document.createElement("div");
-          errorHeader.className = "tikz-error-header error";
-          const errorIcon = document.createElement("span");
-          errorIcon.className = "tikz-error-icon";
-          errorHeader.appendChild(errorIcon);
-          const errorTitle = document.createElement("span");
-          errorTitle.className = "tikz-error-title";
-          errorTitle.textContent = "TikZ Error";
-          errorHeader.appendChild(errorTitle);
-          errorContainer.appendChild(errorHeader);
-          const errorMessage = document.createElement("div");
-          errorMessage.className = "tikz-error-message specific-error";
-          errorMessage.textContent = error.message || "Unknown error";
-          errorContainer.appendChild(errorMessage);
-          const noteEl = document.createElement("div");
-          noteEl.className = "tikz-error-note";
-          noteEl.textContent = "For more details, check the server logs or try running the TikZ code in a LaTeX editor.";
-          errorContainer.appendChild(noteEl);
-          errorEl.appendChild(errorContainer);
+          const errorContainer = errorEl.createDiv({ cls: "tikz-error-container" });
+          const errorHeader = errorContainer.createDiv({ cls: "tikz-error-header error" });
+          const errorIcon = errorHeader.createSpan({ cls: "tikz-error-icon" });
+          const errorTitle = errorHeader.createSpan({
+            cls: "tikz-error-title",
+            text: "TikZ Error"
+          });
+          const errorMessage = errorContainer.createDiv({
+            cls: "tikz-error-message specific-error",
+            text: error.message || "Unknown error"
+          });
+          const noteEl = errorContainer.createDiv({
+            cls: "tikz-error-note",
+            text: "For more details, check the server logs or try running the TikZ code in a LaTeX editor."
+          });
         }
         console.error("TikZ rendering error:", error);
         return;
@@ -345,14 +349,17 @@ var TikZRenderer = class {
     }
     if (renderResult) {
       if (renderResult.format === "svg") {
-        contentEl.innerHTML = renderResult.content;
+        const svgContainer = contentEl.createDiv();
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(renderResult.content, "image/svg+xml");
+        const svgElement = svgDoc.documentElement;
+        svgContainer.appendChild(document.importNode(svgElement, true));
       } else if (renderResult.format === "pdf") {
         const pdfEmbed = contentEl.createEl("embed", {
           attr: {
             type: "application/pdf",
             src: `data:application/pdf;base64,${renderResult.content}`,
-            width: "100%",
-            height: "400px"
+            cls: "tikz-pdf-embed"
           }
         });
       }
@@ -362,7 +369,8 @@ var TikZRenderer = class {
     contentEl.empty();
     const loadingEl = contentEl.createDiv({ cls: "tikz-loading" });
     loadingEl.createDiv({ cls: "tikz-loading-spinner" });
-    errorEl.style.display = "none";
+    errorEl.addClass("tikz-hidden");
+    errorEl.removeClass("tikz-visible");
     if (cacheIndicator) {
       cacheIndicator.setText("");
     }
@@ -382,74 +390,86 @@ var TikZRenderer = class {
       loadingEl.remove();
       if (renderResult) {
         if (renderResult.format === "svg") {
-          contentEl.innerHTML = renderResult.content;
+          const svgContainer = contentEl.createDiv();
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(renderResult.content, "image/svg+xml");
+          const svgElement = svgDoc.documentElement;
+          svgContainer.appendChild(document.importNode(svgElement, true));
         } else if (renderResult.format === "pdf") {
           const pdfEmbed = contentEl.createEl("embed", {
             attr: {
               type: "application/pdf",
               src: `data:application/pdf;base64,${renderResult.content}`,
-              width: "100%",
-              height: "400px"
+              cls: "tikz-pdf-embed"
             }
           });
         }
       }
     } catch (error) {
       loadingEl.remove();
-      errorEl.style.display = "block";
-      console.log("TikZ refresh error object:", error);
-      console.log("Error message:", error.message);
-      console.log("Has errorHTML:", !!error.errorHTML);
-      console.log("Has errorInfo:", !!error.errorInfo);
+      errorEl.removeClass("tikz-hidden");
+      errorEl.addClass("tikz-visible");
+      if (this.plugin.settings.debugMode) {
+        console.log("TikZ refresh error object:", error);
+        console.log("Error message:", error.message);
+        console.log("Has errorHTML:", !!error.errorHTML);
+        console.log("Has errorInfo:", !!error.errorInfo);
+      }
       errorEl.empty();
       if (error.errorInfo || error.errorHTML) {
         this.createStructuredErrorDisplay(errorEl, error);
       } else {
-        const errorContainer = document.createElement("div");
-        errorContainer.className = "tikz-error-container";
-        const errorHeader = document.createElement("div");
-        errorHeader.className = "tikz-error-header error";
-        const errorIcon = document.createElement("span");
-        errorIcon.className = "tikz-error-icon";
-        errorHeader.appendChild(errorIcon);
-        const errorTitle = document.createElement("span");
-        errorTitle.className = "tikz-error-title";
-        errorTitle.textContent = "TikZ Error";
-        errorHeader.appendChild(errorTitle);
-        errorContainer.appendChild(errorHeader);
-        const errorMessage = document.createElement("div");
-        errorMessage.className = "tikz-error-message specific-error";
-        errorMessage.textContent = error.message || "Unknown error";
-        errorContainer.appendChild(errorMessage);
-        const noteEl = document.createElement("div");
-        noteEl.className = "tikz-error-note";
-        noteEl.textContent = "For more details, check the server logs or try running the TikZ code in a LaTeX editor.";
-        errorContainer.appendChild(noteEl);
-        errorEl.appendChild(errorContainer);
+        const errorContainer = errorEl.createDiv({ cls: "tikz-error-container" });
+        const errorHeader = errorContainer.createDiv({ cls: "tikz-error-header error" });
+        const errorIcon = errorHeader.createSpan({ cls: "tikz-error-icon" });
+        const errorTitle = errorHeader.createSpan({
+          cls: "tikz-error-title",
+          text: "TikZ Error"
+        });
+        const errorMessage = errorContainer.createDiv({
+          cls: "tikz-error-message specific-error",
+          text: error.message || "Unknown error"
+        });
+        const noteEl = errorContainer.createDiv({
+          cls: "tikz-error-note",
+          text: "For more details, check the server logs or try running the TikZ code in a LaTeX editor."
+        });
       }
       console.error("TikZ refresh error:", error);
     }
   }
   createStructuredErrorDisplay(containerEl, error) {
-    console.log("Creating structured error display with:", error);
+    if (this.plugin.settings.debugMode) {
+      console.log("Creating structured error display with:", error);
+    }
     containerEl.empty();
     try {
       if (error.errorHTML) {
         const wrapper = containerEl.createDiv({ cls: "tikz-error-wrapper" });
-        wrapper.innerHTML = error.errorHTML;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(error.errorHTML, "text/html");
+        const bodyContent = doc.body;
+        if (bodyContent) {
+          Array.from(bodyContent.childNodes).forEach((node) => {
+            wrapper.appendChild(document.importNode(node, true));
+          });
+        }
         setTimeout(() => {
           const errorHeader2 = wrapper.querySelector(".tikz-error-header");
           const detailsSection = wrapper.querySelector(".tikz-error-details");
           const toggleButton2 = wrapper.querySelector(".tikz-error-toggle");
           if (errorHeader2 && detailsSection) {
-            detailsSection.style.display = "none";
+            detailsSection.addClass("tikz-hidden");
+            detailsSection.removeClass("tikz-visible");
             errorHeader2.addEventListener("click", () => {
-              if (detailsSection.style.display === "none") {
-                detailsSection.style.display = "block";
+              if (detailsSection.hasClass("tikz-hidden")) {
+                detailsSection.removeClass("tikz-hidden");
+                detailsSection.addClass("tikz-visible");
                 if (toggleButton2)
                   toggleButton2.textContent = "\u25B2";
               } else {
-                detailsSection.style.display = "none";
+                detailsSection.addClass("tikz-hidden");
+                detailsSection.removeClass("tikz-visible");
                 if (toggleButton2)
                   toggleButton2.textContent = "\u25BC";
               }
@@ -473,14 +493,15 @@ var TikZRenderer = class {
         cls: "tikz-error-message specific-error"
       });
       messageContainer.setText(error.message || errorInfo.message || "Unknown error");
-      const detailsContainer = errorContainer.createDiv({ cls: "tikz-error-details" });
-      detailsContainer.style.display = "none";
+      const detailsContainer = errorContainer.createDiv({ cls: "tikz-error-details tikz-hidden" });
       errorHeader.addEventListener("click", () => {
-        if (detailsContainer.style.display === "none") {
-          detailsContainer.style.display = "block";
+        if (detailsContainer.hasClass("tikz-hidden")) {
+          detailsContainer.removeClass("tikz-hidden");
+          detailsContainer.addClass("tikz-visible");
           toggleButton.setText("\u25B2");
         } else {
-          detailsContainer.style.display = "none";
+          detailsContainer.addClass("tikz-hidden");
+          detailsContainer.removeClass("tikz-visible");
           toggleButton.setText("\u25BC");
         }
       });
@@ -611,7 +632,9 @@ var TikZServerConnector = class {
       });
       return response.status === 200;
     } catch (error) {
-      console.error("Error testing TikZ server connection:", error);
+      if (this.plugin.settings.debugMode) {
+        console.error("Error testing TikZ server connection:", error);
+      }
       return false;
     }
   }
@@ -629,7 +652,9 @@ var TikZServerConnector = class {
       }
       return response.json;
     } catch (error) {
-      console.error("Error getting TikZ server info:", error);
+      if (this.plugin.settings.debugMode) {
+        console.error("Error getting TikZ server info:", error);
+      }
       throw error;
     }
   }
@@ -657,15 +682,21 @@ var TikZServerConnector = class {
       });
       const result = response.json;
       if (result.error || result.success === false) {
-        console.log("Server returned error in response body:", result);
+        if (this.plugin.settings.debugMode) {
+          console.log("Server returned error in response body:", result);
+        }
         const error = new Error(result.error || "Unknown error");
         if (result.errorInfo) {
           error.errorInfo = result.errorInfo;
-          console.log("Error info from response:", result.errorInfo);
+          if (this.plugin.settings.debugMode) {
+            console.log("Error info from response:", result.errorInfo);
+          }
         }
         if (result.errorHTML) {
           error.errorHTML = result.errorHTML;
-          console.log("Error HTML from response:", result.errorHTML ? "[HTML content available]" : void 0);
+          if (this.plugin.settings.debugMode) {
+            console.log("Error HTML from response:", result.errorHTML ? "[HTML content available]" : void 0);
+          }
         }
         if (result.errorType) {
           error.errorType = result.errorType;
@@ -682,7 +713,9 @@ var TikZServerConnector = class {
         height: result.height
       };
     } catch (error) {
-      console.error("Error rendering TikZ:", error);
+      if (this.plugin.settings.debugMode) {
+        console.error("Error rendering TikZ:", error);
+      }
       throw error;
     }
   }

@@ -56,8 +56,7 @@ export class TikZRenderer {
     loadingEl.createDiv({ cls: 'tikz-loading-spinner' });
 
     // Create error container (hidden by default)
-    const errorEl = tikzContainer.createDiv({ cls: 'tikz-error' });
-    errorEl.style.display = 'none';
+    const errorEl = tikzContainer.createDiv({ cls: 'tikz-error tikz-hidden' });
 
     // Create cache indicator if enabled
     let cacheIndicator: HTMLElement | null = null;
@@ -92,7 +91,8 @@ export class TikZRenderer {
       } catch (error: any) {
         // Handle error
         loadingEl.remove();
-        errorEl.style.display = 'block';
+        errorEl.removeClass('tikz-hidden');
+        errorEl.addClass('tikz-visible');
 
         // Clear the error element
         errorEl.empty();
@@ -121,16 +121,23 @@ export class TikZRenderer {
     // Display the rendered content
     if (renderResult) {
       if (renderResult.format === 'svg') {
-        // For SVG, we can directly insert the content
-        contentEl.innerHTML = renderResult.content;
+        // For SVG, create a container and set its content safely
+        const svgContainer = contentEl.createDiv();
+
+        // Create a temporary DOM element to parse the SVG
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(renderResult.content, 'image/svg+xml');
+        const svgElement = svgDoc.documentElement;
+
+        // Append the SVG element to our container
+        svgContainer.appendChild(document.importNode(svgElement, true));
       } else if (renderResult.format === 'pdf') {
         // For PDF, we need to create an object or embed element
         const pdfEmbed = contentEl.createEl('embed', {
           attr: {
             type: 'application/pdf',
             src: `data:application/pdf;base64,${renderResult.content}`,
-            width: '100%',
-            height: '400px'
+            cls: 'tikz-pdf-embed'
           }
         });
       }
@@ -156,15 +163,18 @@ export class TikZRenderer {
     // Set up zoom functionality if enabled
     if (this.plugin.settings.enableZoom) {
       let zoomLevel = 1;
+      contentEl.addClass('tikz-content-zoom-1');
 
       contentEl.addEventListener('click', () => {
         if (zoomLevel === 1) {
           zoomLevel = 2;
-          contentEl.style.transform = `scale(${zoomLevel})`;
+          contentEl.removeClass('tikz-content-zoom-1');
+          contentEl.addClass('tikz-content-zoom-2');
           contentEl.addClass('zoomed');
         } else {
           zoomLevel = 1;
-          contentEl.style.transform = '';
+          contentEl.removeClass('tikz-content-zoom-2');
+          contentEl.addClass('tikz-content-zoom-1');
           contentEl.removeClass('zoomed');
         }
       });
@@ -183,7 +193,8 @@ export class TikZRenderer {
     const loadingEl = contentEl.createDiv({ cls: 'tikz-loading' });
     loadingEl.createDiv({ cls: 'tikz-loading-spinner' });
 
-    errorEl.style.display = 'none';
+    errorEl.addClass('tikz-hidden');
+    errorEl.removeClass('tikz-visible');
 
     // Update cache indicator
     if (cacheIndicator) {
@@ -217,13 +228,16 @@ export class TikZRenderer {
       } catch (error: any) {
         // Handle error
         loadingEl.remove();
-        errorEl.style.display = 'block';
+        errorEl.removeClass('tikz-hidden');
+        errorEl.addClass('tikz-visible');
 
         // Log the error for debugging
-        console.log('TikZ error object:', error);
-        console.log('Error message:', error.message);
-        console.log('Has errorHTML:', !!error.errorHTML);
-        console.log('Has errorInfo:', !!error.errorInfo);
+        if (this.plugin.settings.debugMode) {
+          console.log('TikZ error object:', error);
+          console.log('Error message:', error.message);
+          console.log('Has errorHTML:', !!error.errorHTML);
+          console.log('Has errorInfo:', !!error.errorInfo);
+        }
 
         // Clear the error element
         errorEl.empty();
@@ -233,40 +247,31 @@ export class TikZRenderer {
           this.createStructuredErrorDisplay(errorEl, error);
         } else {
           // Create a basic error container with improved styling
-          const errorContainer = document.createElement('div');
-          errorContainer.className = 'tikz-error-container';
+          const errorContainer = errorEl.createDiv({ cls: 'tikz-error-container' });
 
           // Create error header
-          const errorHeader = document.createElement('div');
-          errorHeader.className = 'tikz-error-header error';
+          const errorHeader = errorContainer.createDiv({ cls: 'tikz-error-header error' });
 
           // Add error icon
-          const errorIcon = document.createElement('span');
-          errorIcon.className = 'tikz-error-icon';
-          errorHeader.appendChild(errorIcon);
+          const errorIcon = errorHeader.createSpan({ cls: 'tikz-error-icon' });
 
           // Add error title
-          const errorTitle = document.createElement('span');
-          errorTitle.className = 'tikz-error-title';
-          errorTitle.textContent = 'TikZ Error';
-          errorHeader.appendChild(errorTitle);
-
-          errorContainer.appendChild(errorHeader);
+          const errorTitle = errorHeader.createSpan({
+            cls: 'tikz-error-title',
+            text: 'TikZ Error'
+          });
 
           // Create error message - always highlight to make it stand out
-          const errorMessage = document.createElement('div');
-          errorMessage.className = 'tikz-error-message specific-error';
-          errorMessage.textContent = error.message || 'Unknown error';
-          errorContainer.appendChild(errorMessage);
+          const errorMessage = errorContainer.createDiv({
+            cls: 'tikz-error-message specific-error',
+            text: error.message || 'Unknown error'
+          });
 
           // Add a note about checking server logs
-          const noteEl = document.createElement('div');
-          noteEl.className = 'tikz-error-note';
-          noteEl.textContent = 'For more details, check the server logs or try running the TikZ code in a LaTeX editor.';
-          errorContainer.appendChild(noteEl);
-
-          // Add the error container to the error element
-          errorEl.appendChild(errorContainer);
+          const noteEl = errorContainer.createDiv({
+            cls: 'tikz-error-note',
+            text: 'For more details, check the server logs or try running the TikZ code in a LaTeX editor.'
+          });
         }
 
         // Log the error for debugging
@@ -286,16 +291,23 @@ export class TikZRenderer {
     // Display the rendered content
     if (renderResult) {
       if (renderResult.format === 'svg') {
-        // For SVG, we can directly insert the content
-        contentEl.innerHTML = renderResult.content;
+        // For SVG, create a container and set its content safely
+        const svgContainer = contentEl.createDiv();
+
+        // Create a temporary DOM element to parse the SVG
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(renderResult.content, 'image/svg+xml');
+        const svgElement = svgDoc.documentElement;
+
+        // Append the SVG element to our container
+        svgContainer.appendChild(document.importNode(svgElement, true));
       } else if (renderResult.format === 'pdf') {
         // For PDF, we need to create an object or embed element
         const pdfEmbed = contentEl.createEl('embed', {
           attr: {
             type: 'application/pdf',
             src: `data:application/pdf;base64,${renderResult.content}`,
-            width: '100%',
-            height: '400px'
+            cls: 'tikz-pdf-embed'
           }
         });
       }
@@ -313,7 +325,8 @@ export class TikZRenderer {
     const loadingEl = contentEl.createDiv({ cls: 'tikz-loading' });
     loadingEl.createDiv({ cls: 'tikz-loading-spinner' });
 
-    errorEl.style.display = 'none';
+    errorEl.addClass('tikz-hidden');
+    errorEl.removeClass('tikz-visible');
 
     // Update cache indicator
     if (cacheIndicator) {
@@ -345,16 +358,23 @@ export class TikZRenderer {
       // Display the rendered content
       if (renderResult) {
         if (renderResult.format === 'svg') {
-          // For SVG, we can directly insert the content
-          contentEl.innerHTML = renderResult.content;
+          // For SVG, create a container and set its content safely
+          const svgContainer = contentEl.createDiv();
+
+          // Create a temporary DOM element to parse the SVG
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(renderResult.content, 'image/svg+xml');
+          const svgElement = svgDoc.documentElement;
+
+          // Append the SVG element to our container
+          svgContainer.appendChild(document.importNode(svgElement, true));
         } else if (renderResult.format === 'pdf') {
           // For PDF, we need to create an object or embed element
           const pdfEmbed = contentEl.createEl('embed', {
             attr: {
               type: 'application/pdf',
               src: `data:application/pdf;base64,${renderResult.content}`,
-              width: '100%',
-              height: '400px'
+              cls: 'tikz-pdf-embed'
             }
           });
         }
@@ -362,13 +382,16 @@ export class TikZRenderer {
     } catch (error: any) {
       // Handle error
       loadingEl.remove();
-      errorEl.style.display = 'block';
+      errorEl.removeClass('tikz-hidden');
+      errorEl.addClass('tikz-visible');
 
       // Log the error for debugging
-      console.log('TikZ refresh error object:', error);
-      console.log('Error message:', error.message);
-      console.log('Has errorHTML:', !!error.errorHTML);
-      console.log('Has errorInfo:', !!error.errorInfo);
+      if (this.plugin.settings.debugMode) {
+        console.log('TikZ refresh error object:', error);
+        console.log('Error message:', error.message);
+        console.log('Has errorHTML:', !!error.errorHTML);
+        console.log('Has errorInfo:', !!error.errorInfo);
+      }
 
       // Clear the error element
       errorEl.empty();
@@ -378,40 +401,31 @@ export class TikZRenderer {
         this.createStructuredErrorDisplay(errorEl, error);
       } else {
         // Create a basic error container with improved styling
-        const errorContainer = document.createElement('div');
-        errorContainer.className = 'tikz-error-container';
+        const errorContainer = errorEl.createDiv({ cls: 'tikz-error-container' });
 
         // Create error header
-        const errorHeader = document.createElement('div');
-        errorHeader.className = 'tikz-error-header error';
+        const errorHeader = errorContainer.createDiv({ cls: 'tikz-error-header error' });
 
         // Add error icon
-        const errorIcon = document.createElement('span');
-        errorIcon.className = 'tikz-error-icon';
-        errorHeader.appendChild(errorIcon);
+        const errorIcon = errorHeader.createSpan({ cls: 'tikz-error-icon' });
 
         // Add error title
-        const errorTitle = document.createElement('span');
-        errorTitle.className = 'tikz-error-title';
-        errorTitle.textContent = 'TikZ Error';
-        errorHeader.appendChild(errorTitle);
-
-        errorContainer.appendChild(errorHeader);
+        const errorTitle = errorHeader.createSpan({
+          cls: 'tikz-error-title',
+          text: 'TikZ Error'
+        });
 
         // Create error message - always highlight to make it stand out
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'tikz-error-message specific-error';
-        errorMessage.textContent = error.message || 'Unknown error';
-        errorContainer.appendChild(errorMessage);
+        const errorMessage = errorContainer.createDiv({
+          cls: 'tikz-error-message specific-error',
+          text: error.message || 'Unknown error'
+        });
 
         // Add a note about checking server logs
-        const noteEl = document.createElement('div');
-        noteEl.className = 'tikz-error-note';
-        noteEl.textContent = 'For more details, check the server logs or try running the TikZ code in a LaTeX editor.';
-        errorContainer.appendChild(noteEl);
-
-        // Add the error container to the error element
-        errorEl.appendChild(errorContainer);
+        const noteEl = errorContainer.createDiv({
+          cls: 'tikz-error-note',
+          text: 'For more details, check the server logs or try running the TikZ code in a LaTeX editor.'
+        });
       }
 
       // Log the error for debugging
@@ -423,17 +437,30 @@ export class TikZRenderer {
    * Create a structured error display
    */
   private createStructuredErrorDisplay(containerEl: HTMLElement, error: any): void {
-    console.log('Creating structured error display with:', error);
+    if (this.plugin.settings.debugMode) {
+      console.log('Creating structured error display with:', error);
+    }
 
     // Clear the container
     containerEl.empty();
 
     try {
-      // If the error has HTML content, use it directly
+      // If the error has HTML content, parse it and create DOM elements
       if (error.errorHTML) {
-        // Create a wrapper div to hold the HTML content
+        // Create a wrapper div to hold the content
         const wrapper = containerEl.createDiv({ cls: 'tikz-error-wrapper' });
-        wrapper.innerHTML = error.errorHTML;
+
+        // Parse the HTML content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(error.errorHTML, 'text/html');
+
+        // Import and append the body content
+        const bodyContent = doc.body;
+        if (bodyContent) {
+          Array.from(bodyContent.childNodes).forEach(node => {
+            wrapper.appendChild(document.importNode(node, true));
+          });
+        }
 
         // Add click handler to toggle details visibility
         setTimeout(() => {
@@ -443,14 +470,17 @@ export class TikZRenderer {
 
           if (errorHeader && detailsSection) {
             // Initially hide details
-            detailsSection.style.display = 'none';
+            detailsSection.addClass('tikz-hidden');
+            detailsSection.removeClass('tikz-visible');
 
             errorHeader.addEventListener('click', () => {
-              if (detailsSection.style.display === 'none') {
-                detailsSection.style.display = 'block';
+              if (detailsSection.hasClass('tikz-hidden')) {
+                detailsSection.removeClass('tikz-hidden');
+                detailsSection.addClass('tikz-visible');
                 if (toggleButton) toggleButton.textContent = '▲';
               } else {
-                detailsSection.style.display = 'none';
+                detailsSection.addClass('tikz-hidden');
+                detailsSection.removeClass('tikz-visible');
                 if (toggleButton) toggleButton.textContent = '▼';
               }
             });
@@ -488,18 +518,17 @@ export class TikZRenderer {
       messageContainer.setText(error.message || errorInfo.message || 'Unknown error');
 
       // Create collapsible details section
-      const detailsContainer = errorContainer.createDiv({ cls: 'tikz-error-details' });
-
-      // Initially hide the details
-      detailsContainer.style.display = 'none';
+      const detailsContainer = errorContainer.createDiv({ cls: 'tikz-error-details tikz-hidden' });
 
       // Add toggle functionality
       errorHeader.addEventListener('click', () => {
-        if (detailsContainer.style.display === 'none') {
-          detailsContainer.style.display = 'block';
+        if (detailsContainer.hasClass('tikz-hidden')) {
+          detailsContainer.removeClass('tikz-hidden');
+          detailsContainer.addClass('tikz-visible');
           toggleButton.setText('▲');
         } else {
-          detailsContainer.style.display = 'none';
+          detailsContainer.addClass('tikz-hidden');
+          detailsContainer.removeClass('tikz-visible');
           toggleButton.setText('▼');
         }
       });

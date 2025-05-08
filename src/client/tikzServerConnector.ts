@@ -30,7 +30,9 @@ export class TikZServerConnector {
 
       return response.status === 200;
     } catch (error) {
-      console.error('Error testing TikZ server connection:', error);
+      if (this.plugin.settings.debugMode) {
+        console.error('Error testing TikZ server connection:', error);
+      }
       return false;
     }
   }
@@ -54,7 +56,9 @@ export class TikZServerConnector {
 
       return response.json as HealthResponse;
     } catch (error) {
-      console.error('Error getting TikZ server info:', error);
+      if (this.plugin.settings.debugMode) {
+        console.error('Error getting TikZ server info:', error);
+      }
       throw error;
     }
   }
@@ -102,7 +106,9 @@ export class TikZServerConnector {
 
       // Check if the response contains an error
       if (result.error || result.success === false) {
-        console.log('Server returned error in response body:', result);
+        if (this.plugin.settings.debugMode) {
+          console.log('Server returned error in response body:', result);
+        }
 
         // Create a custom error with the structured error information
         const error: any = new Error(result.error || 'Unknown error');
@@ -110,13 +116,17 @@ export class TikZServerConnector {
         // Add the error info if available
         if (result.errorInfo) {
           error.errorInfo = result.errorInfo;
-          console.log('Error info from response:', result.errorInfo);
+          if (this.plugin.settings.debugMode) {
+            console.log('Error info from response:', result.errorInfo);
+          }
         }
 
         // Add the HTML error if available
         if (result.errorHTML) {
           error.errorHTML = result.errorHTML;
-          console.log('Error HTML from response:', result.errorHTML ? '[HTML content available]' : undefined);
+          if (this.plugin.settings.debugMode) {
+            console.log('Error HTML from response:', result.errorHTML ? '[HTML content available]' : undefined);
+          }
         }
 
         // Add any other error properties
@@ -140,7 +150,9 @@ export class TikZServerConnector {
         height: result.height
       };
     } catch (error) {
-      console.error('Error rendering TikZ:', error);
+      if (this.plugin.settings.debugMode) {
+        console.error('Error rendering TikZ:', error);
+      }
       throw error;
     }
   }
